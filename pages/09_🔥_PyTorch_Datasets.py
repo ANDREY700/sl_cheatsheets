@@ -122,6 +122,8 @@ train_loader = DataLoader(train_dataset, shuffle=True, batch_size=32)
 Число классов `ImageFolder` определит по числу папок в директориях `train`, `valid` и т.д.
 Он упорядочит их по имени и назначит метки классов от 0 до N-1 (где N – число классов). 
 
+### Класс `Dataset` для решения задачи очистки изображений
+
 Часто `ImageFolder` не удовлетворяет нашим потребностям. Например, для обучения Denoising Autoencoder нам нужно забирать 
 из папок пары картинок: чистую и зашумленную версию. Ниже приведена базовая версия класса `CustomImageDataset`:
 
@@ -157,7 +159,7 @@ class CustomImageDataset(Dataset):
         if self.aug:
             noisy_img = self.aug(noisy_img)
             clean_img = self.aug(clean_img)
-        return noisy_img, clean_img <- Это то, что будет в цикле обучения возвращать loader
+        return noisy_img, clean_img # <- Это то, что будет в цикле обучения возвращать loader
 ```
 '''
 
