@@ -7,4 +7,5 @@ torch
 torchvision
 seaborn
 pandas
+opencv-python-headless
 plotly
