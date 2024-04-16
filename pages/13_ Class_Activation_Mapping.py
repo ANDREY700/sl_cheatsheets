@@ -1,3 +1,8 @@
+######
+# This is a copy of official CAM-repo
+# https://github.com/zhoubolei/CAM
+######
+
 # simple implementation of CAM in PyTorch for the modelworks such as Resmodel, Densemodel, Squeezemodel, Inception
 # last update by BZ, June 30, 2021
 
@@ -21,20 +26,22 @@ LABELS_file = "imagenet-simple-labels.json"
 with open(LABELS_file) as f:
     classes = json.load(f)
 # modelworks such as googlemodel, resmodel, densemodel already use global average pooling at the end, so CAM could be used directly.
-    
 
+@st.cache_resource
+def load_models():
+    rn34_model = models.resnet34(weights=models.ResNet34_Weights.DEFAULT)
+    rn152_model = models.resnet152(weights=models.ResNet152_Weights.DEFAULT)
+    dn_model = models.densenet201(weights=models.DenseNet201_Weights.DEFAULT)
+    return rn34_model, rn152_model, dn_model
 
-rn34_model = models.resnet34(weights=models.ResNet34_Weights.DEFAULT)
 rn34_finalconv_name = "layer4"  # this is the last conv layer of the modelwork
 
-rn152_model = models.resnet152(weights=models.ResNet152_Weights.DEFAULT)
 rn152_finalconv_name = "layer4"
 
-dn_model = models.densenet201(weights=models.DenseNet201_Weights.DEFAULT)
 dn_finalconv_name = "features"
 
 
-model_list = (rn34_model, rn152_model, dn_model)
+model_list = load_models()
 model_names = ('rn34', 'rn152', 'dn')
 final_conv_names = (rn34_finalconv_name, rn152_finalconv_name, dn_finalconv_name)
 
@@ -45,23 +52,12 @@ features_blobs = []
 
 
 def hook_feature(module, input, output):
-    # features_blobs = []
     features_blobs.append(output.data.cpu().numpy())
-    # print(features_blobs)
 
 
 
 for model, final_conv in zip(model_list, final_conv_names):
     model._modules.get(final_conv).register_forward_hook(hook_feature)
-
-# model._modules.get(finalconv_name).register_forward_hook(hook_feature)
-
-# get the softmax weight
-# softmaxes = dict()
-# for model in models:
-#     weight_softmax = np.squeeze(list(model.parameters())[-2].data.numpy())
-#     softmaxes[f"model"] = weight_softmax
-
 
 def returnCAM(feature_conv, weight_softmax, class_idx):
     # generate the class activation maps upsample to 256x256
@@ -84,24 +80,16 @@ preprocess = transforms.Compose(
     [transforms.Resize((224, 224)), transforms.ToTensor(), normalize]
 )
 
-# load test image
-# img_pil = Image.open(image_file)
-# img_tensor = preprocess(img_pil)
 columns = st.columns(3)
 uploaded_file = st.file_uploader("Choose a file")
 if uploaded_file:
-# img = cv2.imread("dog.jpeg")
     img_pil = Image.open(uploaded_file).convert('RGB')
     img_tensor = preprocess(img_pil)
     
-    # st.write(img_tensor.shape)
+
     for ix, (model, name) in enumerate(zip(model_list, model_names)):
-        # print(f'{name}')
-        # logits[f'model'] = model(img_tensor.unsqueeze(0))
         with torch.inference_mode():
             logit = model(img_tensor.unsqueeze(0))
-        # print(logit.shape)
-
         h_x = F.softmax(logit, dim=1).squeeze()
         probs, idx = h_x.sort(0, True)
         probs = probs.numpy()
@@ -122,9 +110,8 @@ if uploaded_file:
         height, width, _ = cv2_image.shape
         heatmap = cv2.applyColorMap(cv2.resize(CAMs[0], (width, height)), cv2.COLORMAP_JET)
         result = heatmap * 0.3 + cv2_image * 0.5
-        # print(f'TYPE:{type(result)}')
         with columns[ix]:
             st.subheader(model_names[ix])
             st.image(Image.fromarray(result.astype(np.uint8))) 
-        # cv2.imwrite(f"CAM-{name}.jpg", result)
+
 
