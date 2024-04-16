@@ -42,7 +42,7 @@ dn_finalconv_name = "features"
 
 
 model_list = load_models()
-model_names = ('rn34', 'rn152', 'dn')
+model_names = ('ResNet34', 'ResNet152', 'DenseNet')
 final_conv_names = (rn34_finalconv_name, rn152_finalconv_name, dn_finalconv_name)
 
 _ = [model.eval() for model in model_list]
