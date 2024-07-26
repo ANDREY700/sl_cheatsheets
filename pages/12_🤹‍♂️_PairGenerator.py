@@ -4,7 +4,7 @@ import streamlit.components.v1 as components
 
 st.header('Генератор команд')
 
-teams = st.multiselect('Названия команд', [
+teams = st.multiselect('Team names', options=[
     'pandas', 'matplotlib', 'seaborn', 
     'sklearn', 'CountVectorizer', 'TfIDFVectorizer',
     'LogRegression', 'Ridge', 'LASSO', 'ElasticNet',
@@ -12,11 +12,20 @@ teams = st.multiselect('Названия команд', [
     'MSE', 'MAE', 'MAPE',
     'XGBoost', 'LightGBM', 'CatBoost',
     'Dropout', 'Convolution','Linear',
-    'GPT', 'BERT', 'LSTM', 'RNN', 'LSTM', 
-    'ResNet', 'Inception', 'DenseNet', 'VGG', 'AlexNet', 'MobileNet', 
-    'YOLO', 'FasterRCNN', 'Mask RCNN', 
+    'ResNet: https://github.com/Elbrus-DataScience/nn_resnet_team', 
+    'Inception: https://github.com/Elbrus-DataScience/nn_inception_team', 
+    'DenseNet: https://github.com/Elbrus-DataScience/nn_densenet_team', 
+    'VGG: https://github.com/Elbrus-DataScience/nn_vgg_team', 
+    'AlexNet: https://github.com/Elbrus-DataScience/nn_alexnet_team',  
+    'YOLO: https://github.com/Elbrus-DataScience/cv_yolo', 
+    'FasterRCNN: https://github.com/Elbrus-DataScience/cv_faster-rcnn', 
+    'Mask RCNN: https://github.com/Elbrus-DataScience/cv_mask-rcnn', 
+    'BERT: https://github.com/Elbrus-DataScience/nlp_lstm_team', 
+    'LSTM: https://github.com/Elbrus-DataScience/nlp_bert_team', 
+    'GPT: https://github.com/Elbrus-DataScience/nlp_gpt_team', 
+    'RNN', 'LSTM', 
     'SQL', 'PySpark'
-])
+], label_visibility='hidden')
 
 names = st.radio(
             ' ', 
