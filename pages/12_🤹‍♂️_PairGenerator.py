@@ -5,7 +5,7 @@ import streamlit.components.v1 as components
 st.header('Генератор команд')
 
 teams = st.multiselect('Team names', options=[
-    'pandas', 'matplotlib', 'seaborn', 
+    'pandas', 'matplotlib', 'seaborn', 'plotly', 'streamlit', 'docker',
     'sklearn', 'CountVectorizer', 'TfIDFVectorizer',
     'LogRegression', 'Ridge', 'LASSO', 'ElasticNet',
     'Poisson', 'Bernoulli', 'Gauss',
@@ -31,8 +31,9 @@ names = st.radio(
             ' ', 
             [
                 # 'Александр, Екатерина, Ида, Илья, Марина, Никита, Оксана, Константин, Ерлан', 
-                'Артемий, Наталья, Савр, Сергей, Влад, Николай, Валерия, Сауле',
+                # 'Артемий, Наталья, Савр, Сергей, Влад, Николай, Валерия, Сауле',
                 'Александр, Любовь, Анастасия, Толубай, Дмитрий, Константин, Сергей Ч., Сергей К., Наталья'
+                'Тимур, Диана, Данила, Роман, Марина, Александр, Андрей, Алексей, Елизавета, Ламберт'
                 # add here more names as str
             ]
         )
@@ -46,7 +47,7 @@ if names and len(teams) != 0 and gen_btn:
         # st.write(teams)
     pairs = get_teams(names.split(', '), teams)
     for team_name, team_participants in pairs.items():
-        st.markdown(f'__{team_name}__:  {(", ".join(team_participants))}')
+        st.markdown(f'__{team_name}__:  {(", ".join(team_participants))}') 
 
 components.html(
     """
