@@ -40,45 +40,46 @@ rn152_finalconv_name = "layer4"
 
 dn_finalconv_name = "features"
 
+download_btn = st.button('Download models')
+if download_btn:
+    model_list = load_models()
+    model_names = ('ResNet34', 'ResNet152', 'DenseNet')
+    final_conv_names = (rn34_finalconv_name, rn152_finalconv_name, dn_finalconv_name)
 
-model_list = load_models()
-model_names = ('ResNet34', 'ResNet152', 'DenseNet')
-final_conv_names = (rn34_finalconv_name, rn152_finalconv_name, dn_finalconv_name)
+    _ = [model.eval() for model in model_list]
 
-_ = [model.eval() for model in model_list]
-
-# hook the feature extractor
-features_blobs = []
-
-
-def hook_feature(module, input, output):
-    features_blobs.append(output.data.cpu().numpy())
+    # hook the feature extractor
+    features_blobs = []
 
 
-
-for model, final_conv in zip(model_list, final_conv_names):
-    model._modules.get(final_conv).register_forward_hook(hook_feature)
-
-def returnCAM(feature_conv, weight_softmax, class_idx):
-    # generate the class activation maps upsample to 256x256
-    size_upsample = (256, 256)
-    print(feature_conv.shape)
-    bz, nc, h, w = feature_conv.shape
-    output_cam = []
-    for idx in class_idx:
-        cam = weight_softmax[idx].dot(feature_conv.reshape((nc, h * w)))
-        cam = cam.reshape(h, w)
-        cam = cam - np.min(cam)
-        cam_img = cam / np.max(cam)
-        cam_img = np.uint8(255 * cam_img)
-        output_cam.append(cv2.resize(cam_img, size_upsample))
-    return output_cam
+    def hook_feature(module, input, output):
+        features_blobs.append(output.data.cpu().numpy())
 
 
-normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
-preprocess = transforms.Compose(
-    [transforms.Resize((224, 224)), transforms.ToTensor(), normalize]
-)
+
+    for model, final_conv in zip(model_list, final_conv_names):
+        model._modules.get(final_conv).register_forward_hook(hook_feature)
+
+    def returnCAM(feature_conv, weight_softmax, class_idx):
+        # generate the class activation maps upsample to 256x256
+        size_upsample = (256, 256)
+        print(feature_conv.shape)
+        bz, nc, h, w = feature_conv.shape
+        output_cam = []
+        for idx in class_idx:
+            cam = weight_softmax[idx].dot(feature_conv.reshape((nc, h * w)))
+            cam = cam.reshape(h, w)
+            cam = cam - np.min(cam)
+            cam_img = cam / np.max(cam)
+            cam_img = np.uint8(255 * cam_img)
+            output_cam.append(cv2.resize(cam_img, size_upsample))
+        return output_cam
+
+
+    normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    preprocess = transforms.Compose(
+        [transforms.Resize((224, 224)), transforms.ToTensor(), normalize]
+    )
 
 columns = st.columns(3)
 uploaded_file = st.file_uploader("Choose a file")
