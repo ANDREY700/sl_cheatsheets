@@ -41,7 +41,8 @@ rn152_finalconv_name = "layer4"
 dn_finalconv_name = "features"
 
 download_btn = st.button('Download models')
-if download_btn:
+uploaded_file = st.file_uploader("Choose a file")
+if download_btn and uploaded_file:
     model_list = load_models()
     model_names = ('ResNet34', 'ResNet152', 'DenseNet')
     final_conv_names = (rn34_finalconv_name, rn152_finalconv_name, dn_finalconv_name)
@@ -81,9 +82,9 @@ if download_btn:
         [transforms.Resize((224, 224)), transforms.ToTensor(), normalize]
     )
 
-columns = st.columns(3)
-uploaded_file = st.file_uploader("Choose a file")
-if uploaded_file:
+    columns = st.columns(3)
+
+# if uploaded_file:
     img_pil = Image.open(uploaded_file).convert('RGB')
     img_tensor = preprocess(img_pil)
     
