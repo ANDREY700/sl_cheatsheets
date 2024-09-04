@@ -4,13 +4,10 @@ import plotly.graph_objects as go
 st.set_page_config(layout='wide')
 
 def f(x):
-    # return x**2
     return x**4 + 4*x**3 - 4*np.tanh(x) - 2*np.cosh(x)
 
 def grad(x):
-    
     gradient = 4*x**3 + 12*x**2 - 4*((1/np.cosh(x))**2) - 2*np.sinh(x)
-    print(f'input x: {x}, gradient: {gradient}')
     return gradient
 
 def simple_gd(x_init: float):
@@ -35,8 +32,6 @@ def momentum(x_init: float, rho: float):
     y_path.append(f(x_path[-1]))
     v = []
     v.append(0)
-    # lr = 0.1
-    # global lr
 
     for _ in range(n_iters):
         gradient = grad(x_path[-1])
@@ -57,7 +52,6 @@ def adagrad(x_init: float):
     for _ in range(n_iters):
         gradient = grad(x_path[-1])
         g_sum += gradient**2
-        print(f'G_SUM:{g_sum/1000}')
         x_new = x_path[-1] - lr * x_path[-1] / np.sqrt(g_sum/100000 + .001)
         y_path.append(f(x_new))
         x_path.append(x_new)
@@ -83,12 +77,6 @@ with col2:
 
     x_true = np.linspace(-5, 2, 20)
     y = f(x_true)
-
-    print('For VANILLA')
-    
-    print('For MOMENTUM')
-    
-    print('For ADAGRAD')
     
 
     fig = go.Figure(
