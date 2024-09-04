@@ -29,9 +29,10 @@ with open(LABELS_file) as f:
 
 @st.cache_resource
 def load_models():
-    rn34_model = models.resnet34(weights=models.ResNet34_Weights.DEFAULT)
-    rn152_model = models.resnet152(weights=models.ResNet152_Weights.DEFAULT)
-    dn_model = models.densenet201(weights=models.DenseNet201_Weights.DEFAULT)
+    with st.progress(1):
+        rn34_model = models.resnet34(weights=models.ResNet34_Weights.DEFAULT)
+        rn152_model = models.resnet152(weights=models.ResNet152_Weights.DEFAULT)
+        dn_model = models.densenet201(weights=models.DenseNet201_Weights.DEFAULT)
     return rn34_model, rn152_model, dn_model
 
 rn34_finalconv_name = "layer4"  # this is the last conv layer of the modelwork
@@ -40,8 +41,8 @@ rn152_finalconv_name = "layer4"
 
 dn_finalconv_name = "features"
 
-download_btn = st.button('Download models')
 uploaded_file = st.file_uploader("Choose a file")
+download_btn = st.button('Download models')
 if download_btn and uploaded_file:
     model_list = load_models()
     model_names = ('ResNet34', 'ResNet152', 'DenseNet')
