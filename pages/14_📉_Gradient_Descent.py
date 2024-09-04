@@ -123,5 +123,3 @@ with col2:
                     )
     st.plotly_chart(fig, use_container_width=True)
 
-st.write(x_ad)
-st.write(y_ad)
